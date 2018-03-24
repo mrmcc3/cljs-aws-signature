@@ -1,1 +1,2 @@
-{:deps {org.clojure/clojurescript {:mvn/version "1.10.217"}}}
+{:deps {org.clojure/clojurescript {:mvn/version "1.10.217"}}
+ :test {:extra-paths ["test"]}}

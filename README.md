@@ -5,6 +5,8 @@ A pure ClojureScript implementation of the
 
 ## Usage
 
+[![Clojars Project](https://img.shields.io/clojars/v/mrmcc3/cljs-aws-signature.svg)](https://clojars.org/mrmcc3/cljs-aws-signature)
+
 See `test/mrmcc3/aws/sig_v4_usage.cljs` for an example. Run with `cljs.main` via nodejs
 
 ```
