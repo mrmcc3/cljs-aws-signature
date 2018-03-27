@@ -18,7 +18,7 @@ Example request map.
 {:path "/thepath/",
  :service "lambda",
  :date #inst "2018-03-24T06:17:56.256-00:00",
- :payload "the request body",
+ :body "the request body",
  :method "GET",
  :secret "aws-secret-access-key",
  :headers {:Host "hw.com", :X-Amz-Date "20180324T061756Z"},
@@ -33,7 +33,7 @@ Output of `sign-req`
  :service "lambda",
  :alg "AWS4-HMAC-SHA256",
  :date #inst "2018-03-24T06:17:56.256-00:00",
- :payload "the request body",
+ :body "the request body",
  :method "GET",
  :signature "8398f0b217578062ace2204ca36a0911d3840fe36268c0c8c6f15d04857859ad",
  :signed-headers "host;x-amz-date",
@@ -54,8 +54,7 @@ Includes all tests from the [AWS Test Suite](https://docs.aws.amazon.com/general
 except for `get-header-value-multiline`
 
 ```
-$ clj -Atest -m cljs.main test/mrmcc3/aws/sig_v4_test.cljs
 $ clj -Atest -m cljs.main -re node test/mrmcc3/aws/sig_v4_test.cljs
-$ clj -Atest -m cljs.main -O advanced -c mrmcc3.aws.sig_v4_test
-$ xdg-open test/index.html
+$ clj -Atest -m cljs.main -c mrmcc3.aws.sig-v4-test -s
+$ clj -Atest -m cljs.main -O advanced -c mrmcc3.aws.sig-v4-test -s
 ```

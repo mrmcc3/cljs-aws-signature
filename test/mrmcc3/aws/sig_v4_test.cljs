@@ -25,7 +25,7 @@
      :region  "us-east-1"
      :service "service"
      :date    (iso->date (get (into {} headers) "X-Amz-Date"))
-     :payload body
+     :body    body
      :access  "AKIDEXAMPLE"
      :secret  "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"}))
 

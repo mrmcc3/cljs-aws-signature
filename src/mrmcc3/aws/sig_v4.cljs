@@ -48,10 +48,10 @@
       (str/replace-all #"//" "/")
       (Uri.)))
 
-(defn canonical-request [{:keys [method path query headers payload] :as req}]
+(defn canonical-request [{:keys [method path query headers payload body] :as req}]
   (let [[canonical signed] (process-headers headers)
         creq (str/join "\n" [method (path->uri path) (process-query query)
-                             canonical "" signed (sha256 (or payload ""))])]
+                             canonical "" signed (sha256 (or payload body ""))])]
     (assoc req :creq creq :signed-headers signed)))
 
 (defn string-to-sign [{:keys [date region service creq] :as req}]
