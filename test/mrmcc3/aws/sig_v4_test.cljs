@@ -13,9 +13,6 @@
   (let [qd (.getQueryData (Uri. uri))]
     (map vector (.getKeys qd) (.getValues qd))))
 
-(defn iso->date [iso]
-  (.-date (.fromIsoString UtcDateTime iso)))
-
 (defn req->map [{:keys [method uri headers body]}]
   (let [[path] (str/split uri #"\?" 2)]
     {:method  method
@@ -24,7 +21,6 @@
      :headers headers
      :region  "us-east-1"
      :service "service"
-     :date    (iso->date (get (into {} headers) "X-Amz-Date"))
      :body    body
      :access  "AKIDEXAMPLE"
      :secret  "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"}))

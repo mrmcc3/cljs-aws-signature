@@ -4,7 +4,7 @@
     
   <groupId>mrmcc3</groupId>
   <artifactId>cljs-aws-signature</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
     
   <name>cljs-aws-signature</name>
   <description>A pure ClojureScript implementation of the AWS Signature Version 4 Signing Process</description>

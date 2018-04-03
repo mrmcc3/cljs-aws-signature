@@ -7,45 +7,48 @@ A pure ClojureScript implementation of the
 
 [![Clojars Project](https://img.shields.io/clojars/v/mrmcc3/cljs-aws-signature.svg)](https://clojars.org/mrmcc3/cljs-aws-signature)
 
-See `test/mrmcc3/aws/sig_v4_usage.cljs` for an example. Run with `cljs.main` via nodejs
+See `test/mrmcc3/aws/sig_v4_usage.cljs` for an example. Run with
 
 ```
-$ clj -Atest -m cljs.main -re node test/mrmcc3/aws/sig_v4_usage.cljs
+$ clj -A:test:usage
 ```
 
 Example request map.
 ```clojure
-{:path "/thepath/",
- :service "lambda",
- :date #inst "2018-03-24T06:17:56.256-00:00",
- :body "the request body",
- :method "GET",
- :secret "aws-secret-access-key",
- :headers {:Host "hw.com", :X-Amz-Date "20180324T061756Z"},
- :region "ap-southeast-2",
- :access "aws-access-key-id", 
- :query {:Hello "World"}}
+{:method  "GET"
+ :path    "/thepath/"
+ :query   {:Hello "World"}
+ :headers {:Host "hw.com", :X-Amz-Date "20180403T075016Z"}
+ :body    "the request body"
+
+ :service "lambda"
+ :region  "ap-southeast-2"
+ :access  "aws-access-key-id"
+ :secret  "aws-secret-access-key"}
 ```
 
 Output of `sign-req`
 ```clojure
-{:path "/thepath/",
- :service "lambda",
- :alg "AWS4-HMAC-SHA256",
- :date #inst "2018-03-24T06:17:56.256-00:00",
- :body "the request body",
- :method "GET",
- :signature "8398f0b217578062ace2204ca36a0911d3840fe36268c0c8c6f15d04857859ad",
- :signed-headers "host;x-amz-date",
- :scope "20180324/ap-southeast-2/lambda/aws4_request",
- :secret "aws-secret-access-key",
- :headers {:Host "hw.com", :X-Amz-Date "20180324T061756Z"},
- :region "ap-southeast-2",
- :sts "AWS4-HMAC-SHA256\n20180324T061756Z\n20180324/ap-southeast-2/lambda/aws4_request\n440933f30a0f8431a994cf72e1ab5fffe4594746fda23a47cf12572f8e58e64c",
- :creq "GET\n/thepath/\nHello=World\nhost:hw.com\nx-amz-date:20180324T061756Z\n\nhost;x-amz-date\n6b5eacc80f13368f01e2107935c6adaccd58cda3a709cc2faebe29c016ab8962",
- :access "aws-access-key-id",
- :authz "AWS4-HMAC-SHA256 Credential=aws-access-key-id/20180324/ap-southeast-2/lambda/aws4_request, SignedHeaders=host;x-amz-date, Signature=8398f0b217578062ace2204ca36a0911d3840fe36268c0c8c6f15d04857859ad",
- :query {:Hello "World"}}
+{:method    "GET"
+ :path      "/thepath/"
+ :query     {:Hello "World"}
+ :headers   {:Host "hw.com", :X-Amz-Date "20180403T075016Z"}
+ :body      "the request body"
+
+ :service   "lambda"
+ :region    "ap-southeast-2"
+ :secret    "aws-secret-access-key"
+ :access    "aws-access-key-id"
+
+ :alg       "AWS4-HMAC-SHA256"
+ :iso       "20180403T075016Z"
+ :day       "20180403"
+ :signed    "host;x-amz-date"
+ :creq      "GET\n/thepath/\nHello=World\nhost:hw.com\nx-amz-date:20180403T075016Z\n\nhost;x-amz-date\n6b5eacc80f13368f01e2107935c6adaccd58cda3a709cc2faebe29c016ab8962"
+ :scope     "20180403/ap-southeast-2/lambda/aws4_request"
+ :sts       "AWS4-HMAC-SHA256\n20180403T075016Z\n20180403/ap-southeast-2/lambda/aws4_request\n00bb03ecf97c0674c08f0ac63f2f9c9ac04c447b2cdaced9418336ce92bb5837"
+ :signature "05b9ee058cffb668b7bec341155a08c0a37211fbd64c63f584487fb349383fd8"
+ :authz     "AWS4-HMAC-SHA256 Credential=aws-access-key-id/20180403/ap-southeast-2/lambda/aws4_request, SignedHeaders=host;x-amz-date, Signature=05b9ee058cffb668b7bec341155a08c0a37211fbd64c63f584487fb349383fd8"}
 ```
 
 ## Tests
@@ -54,7 +57,6 @@ Includes all tests from the [AWS Test Suite](https://docs.aws.amazon.com/general
 except for `get-header-value-multiline`
 
 ```
-$ clj -Atest -m cljs.main -re node test/mrmcc3/aws/sig_v4_test.cljs
-$ clj -Atest -m cljs.main -c mrmcc3.aws.sig-v4-test -s
-$ clj -Atest -m cljs.main -O advanced -c mrmcc3.aws.sig-v4-test -s
+$ clj -Atest:node
+$ clj -Atest:adv
 ```

@@ -11,7 +11,6 @@
      :headers {:Host "hw.com" :X-Amz-Date (v4/date->iso date)}
      :region  "ap-southeast-2"
      :service "lambda"
-     :date    date
      :body    "the request body"
      :access  "aws-access-key-id"
      :secret  "aws-secret-access-key"}))

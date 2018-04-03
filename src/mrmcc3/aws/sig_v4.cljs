@@ -19,9 +19,6 @@
 (defn date->iso [date]
   (.toIsoString (UtcDateTime. date) false true))
 
-(defn date->day [date]
-  (subs (date->iso date) 0 8))
-
 (defn process-query [query]
   (reduce
     (fn [q [k v]] (.add q (name k) v))
@@ -41,7 +38,9 @@
         sorted    (sort-by key trimmed)
         canonical (map header-string sorted)
         signed    (map first sorted)]
-    [(str/join "\n" canonical) (str/join ";" signed)]))
+    [(str/join "\n" canonical)
+     (str/join ";" signed)
+     (get-in trimmed ["x-amz-date" 0])]))
 
 (defn path->uri [path]
   (-> (.removeDotSegments Uri (or path "/"))
@@ -49,22 +48,22 @@
       (Uri.)))
 
 (defn canonical-request [{:keys [method path query headers payload body] :as req}]
-  (let [[canonical signed] (process-headers headers)
+  (let [[canonical signed iso] (process-headers headers)
         creq (str/join "\n" [method (path->uri path) (process-query query)
                              canonical "" signed (sha256 (or payload body ""))])]
-    (assoc req :creq creq :signed-headers signed)))
+    (assoc req :creq creq :signed signed :iso iso :day (subs iso 0 8))))
 
-(defn string-to-sign [{:keys [date region service creq] :as req}]
+(defn string-to-sign [{:keys [region service creq iso day] :as req}]
   (let [alg   "AWS4-HMAC-SHA256"
-        scope (str/join "/" [(date->day date) region service "aws4_request"])
+        scope (str/join "/" [day region service "aws4_request"])
         hash  (sha256 creq)
-        sts   (str/join "\n" [alg (date->iso date) scope hash])]
+        sts   (str/join "\n" [alg iso scope hash])]
     (assoc req :sts sts :alg alg :scope scope)))
 
-(defn signature [{:keys [date region service secret sts] :as req}]
+(defn signature [{:keys [day region service secret sts] :as req}]
   (-> (str "AWS4" secret)
       (crypt/stringToByteArray)
-      (hmac (date->day date))
+      (hmac day)
       (hmac region)
       (hmac service)
       (hmac "aws4_request")
@@ -72,9 +71,9 @@
       (crypt/byteArrayToHex)
       (->> (assoc req :signature))))
 
-(defn auth-header [{:keys [alg access scope signed-headers signature] :as req}]
+(defn auth-header [{:keys [alg access scope signed signature] :as req}]
   (assoc req :authz (str alg " Credential=" access "/" scope ", SignedHeaders="
-                        signed-headers ", Signature=" signature)))
+                         signed ", Signature=" signature)))
 
 (defn sign-req [req]
   (-> req canonical-request string-to-sign signature auth-header))
