@@ -1,5 +1,5 @@
 {:deps    {org.clojure/clojurescript {:mvn/version "1.10.238"}}
- :aliases {:test  {:extra-paths ["test"]}
+ :aliases {:test  {:extra-paths ["test"]
+                   :main-opts ["-m" "cljs.main" "-re" "node" "test/mrmcc3/aws/sig_v4_test.cljs"]}
            :usage {:main-opts ["-m" "cljs.main" "-re" "node" "test/mrmcc3/aws/sig_v4_usage.cljs"]}
-           :node  {:main-opts ["-m" "cljs.main" "-re" "node" "test/mrmcc3/aws/sig_v4_test.cljs"]}
            :adv   {:main-opts ["-m" "cljs.main" "-O" "advanced" "-c" "mrmcc3.aws.sig_v4_test" "-s"]}}}

@@ -10,7 +10,7 @@ A pure ClojureScript implementation of the
 See `test/mrmcc3/aws/sig_v4_usage.cljs` for an example. Run with
 
 ```
-$ clj -A:test:usage
+$ clj -Atest:usage
 ```
 
 Example request map.

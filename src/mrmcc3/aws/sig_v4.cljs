@@ -34,13 +34,11 @@
   (str h ":" (str/join "," vals)))
 
 (defn process-headers [headers]
-  (let [trimmed   (reduce trim-header {} headers)
-        sorted    (sort-by key trimmed)
-        canonical (map header-string sorted)
-        signed    (map first sorted)]
-    [(str/join "\n" canonical)
-     (str/join ";" signed)
-     (get-in trimmed ["x-amz-date" 0])]))
+  (let [trimmed (reduce trim-header {} headers)
+        sorted  (sort-by key trimmed)]
+    {:canonical (str/join "\n" (map header-string sorted))
+     :signed    (str/join ";" (map first sorted))
+     :iso       (get-in trimmed ["x-amz-date" 0])}))
 
 (defn path->uri [path]
   (-> (.removeDotSegments Uri (or path "/"))
@@ -48,7 +46,7 @@
       (Uri.)))
 
 (defn canonical-request [{:keys [method path query headers payload body] :as req}]
-  (let [[canonical signed iso] (process-headers headers)
+  (let [{:keys [canonical signed iso]} (process-headers headers)
         creq (str/join "\n" [method (path->uri path) (process-query query)
                              canonical "" signed (sha256 (or payload body ""))])]
     (assoc req :creq creq :signed signed :iso iso :day (subs iso 0 8))))
@@ -56,8 +54,7 @@
 (defn string-to-sign [{:keys [region service creq iso day] :as req}]
   (let [alg   "AWS4-HMAC-SHA256"
         scope (str/join "/" [day region service "aws4_request"])
-        hash  (sha256 creq)
-        sts   (str/join "\n" [alg iso scope hash])]
+        sts   (str/join "\n" [alg iso scope (sha256 creq)])]
     (assoc req :sts sts :alg alg :scope scope)))
 
 (defn signature [{:keys [day region service secret sts] :as req}]
